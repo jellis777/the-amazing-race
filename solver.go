@@ -7,43 +7,43 @@ type Point struct {
 	C int
 }
 
-func FindStartAndEnd(grid [][]int) ([2]int, [2]int, error) {
+func FindStartAndEnd(grid [][]int) (Point, Point, error) {
 
 	if len(grid) == 0 {
-		return [2]int{}, [2]int{}, errors.New("grid is empty")
+		return Point{}, Point{}, errors.New("grid is empty")
 	}
 
 	firstRow := grid[0]
 
-	var start [2]int
+	var start Point
 	countStart := 0
 
 	for col, val := range firstRow {
 		if val == 1 {
-			start = [2]int{0, col}
+			start = Point{0, col}
 			countStart++
 		}
 	}
 
 	if countStart != 1 {
-		return [2]int{}, [2]int{}, errors.New("invalid number of entrances in first row")
+		return Point{}, Point{}, errors.New("invalid number of entrances in first row")
 	}
 
 	lastRowIndex := len(grid) - 1
 	lastRow := grid[lastRowIndex]
 
-	var end [2]int
+	var end Point
 	countEnd := 0
 
 	for col, val := range lastRow {
 		if val == 1 {
-			end = [2]int{lastRowIndex, col}
+			end = Point{lastRowIndex, col}
 			countEnd++
 		}
 	}
 
 	if countEnd != 1 {
-		return [2]int{}, [2]int{}, errors.New("invalid number of exits in last row")
+		return Point{}, Point{}, errors.New("invalid number of exits in last row")
 	}
 
 	return start, end, nil
@@ -73,4 +73,50 @@ func Neighbors(grid [][]int, p Point) []Point {
 
 	return result
 
+}
+
+func SolveMaze(grid [][]int, start Point, end Point) ([]Point, error) {
+	queue := []Point{start}
+	visited := make(map[Point]bool)
+	parent := make(map[Point]Point)
+
+	visited[start] = true
+
+	for len(queue) > 0 {
+		current := queue[0]
+		queue = queue[1:]
+
+		if current == end {
+			break
+		}
+
+		for _, neighbor := range Neighbors(grid, current) {
+			if !visited[neighbor] {
+				visited[neighbor] = true //
+				parent[neighbor] = current
+				queue = append(queue, neighbor)
+			}
+		}
+	}
+
+	if !visited[end] {
+		return nil, errors.New("no path found")
+	}
+
+	var path []Point
+	current := end
+
+	for current != start {
+		path = append(path, current)
+		current = parent[current]
+	}
+
+	path = append(path, start)
+
+	// reverse path
+	for i, j := 0, len(path)-1; i < j; i, j = i+1, j-1 {
+		path[i], path[j] = path[j], path[i]
+	}
+
+	return path, nil
 }
