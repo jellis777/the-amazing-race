@@ -48,3 +48,29 @@ func FindStartAndEnd(grid [][]int) ([2]int, [2]int, error) {
 
 	return start, end, nil
 }
+
+func Neighbors(grid [][]int, p Point) []Point {
+	dirs := []Point{
+		{-1, 0}, // up
+		{1, 0},  // down
+		{0, -1}, // left
+		{0, 1},  // right
+	}
+
+	var result []Point
+
+	for _, d := range dirs {
+		nr := p.R + d.R
+		nc := p.C + d.C
+
+		if nr >= 0 && nr < len(grid) && nc >= 0 && nc < len(grid[0]) { // Verify neighbor is in the grid
+			if grid[nr][nc] == 1 { // Check if it is not a wall
+				result = append(result, Point{nr, nc})
+			}
+		}
+
+	}
+
+	return result
+
+}
