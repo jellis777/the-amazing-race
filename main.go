@@ -6,7 +6,7 @@ import (
 	"os"
 )
 
-func main()  {
+func main() {
 	if len(os.Args) < 2 {
 		log.Fatal("Usage: go run . <maze-file>")
 	}
@@ -18,11 +18,18 @@ func main()  {
 		log.Fatal(err)
 	}
 
-	fmt.Println("Parsed maze successfully")
 	fmt.Println("Rows:", len(grid))
 	fmt.Println("Cols:", len(grid[0]))
 
 	for _, row := range grid {
 		fmt.Println(row)
 	}
+
+	start, end, err := FindStartAndEnd(grid)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	fmt.Println("Start:", start)
+	fmt.Println("End:", end)
 }
